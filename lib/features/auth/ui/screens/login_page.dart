@@ -1,8 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:nomed/components/custom_button.dart';
 import 'package:nomed/components/custom_text_field.dart';
+import 'package:nomed/config/app_config.dart';
 import 'package:nomed/features/auth/bloc/auth_cubit.dart';
 import 'package:nomed/features/auth/bloc/auth_state.dart';
 
@@ -22,6 +23,28 @@ class _LoginPageState extends State<LoginPage> {
   bool _hidePassword = true;
 
   @override
+  void initState() {
+    super.initState();
+
+    if (AppConfig.isDemoMode) {
+      _emailController.text = 'test@mail.com';
+      _passwrodController.text = '12345678';
+
+      // Show toast after first frame (safe for UI)
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+
+        Fluttertoast.showToast(
+          msg:
+              "Demo mode: Credentials are pre-filled. Tap Login to continue or edit them.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+        );
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
@@ -32,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-            
+
               // crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(height: MediaQuery.of(context).size.height * 0.1),
@@ -46,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 SizedBox(height: 40),
-            
+
                 Center(
                   child: CustomTextField(
                     title: "Emial",
@@ -59,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
                   title: "Password",
                   hintText: "Enter Password here",
                   maxLines: 1,
-            
+
                   obscureText: _hidePassword,
                   suffixIcon: InkWell(
                     onTap: () {
@@ -75,11 +98,11 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   textEditingController: _passwrodController,
                 ),
-            
+
                 SizedBox(height: 20),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
-            
+
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text("dont have an account? "),

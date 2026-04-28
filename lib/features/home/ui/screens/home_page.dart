@@ -5,6 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:nomed/config/app_config.dart';
 import 'package:nomed/core/helper.dart';
 import 'package:nomed/core/request_premmisiion_location.dart';
 import 'package:nomed/core/service_locator.dart';
@@ -31,10 +32,20 @@ class _HomePageState extends State<HomePage> {
   Timer? _debounce;
   LatLng? _lastFetchedCenter;
 
+  BitmapDescriptor? _markerIcon;
+
   @override
   void initState() {
     super.initState();
     _getInitialLocation();
+    _loadAssets();
+  }
+
+  Future<void> _loadAssets() async {
+    _markerIcon = await BitmapDescriptor.asset(
+      ImageConfiguration(size: Size(48, 48)),
+      "assets/chat_icon.png",
+    );
   }
 
   Future<void> _getInitialLocation() async {
@@ -62,7 +73,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_initialPosition == null) {
+    if (_initialPosition == null || _markerIcon == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     return BlocBuilder<RoomsCubit, RoomsState>(
@@ -75,9 +86,7 @@ class _HomePageState extends State<HomePage> {
               Marker(
                 markerId: MarkerId(room.id),
                 position: LatLng(room.lat, room.lng),
-                icon: BitmapDescriptor.defaultMarkerWithHue(
-                  BitmapDescriptor.hueAzure,
-                ),
+                icon: _markerIcon!,
                 infoWindow: InfoWindow(title: room.roomName),
                 onTap: () => _showRoomDetails(context, room.id),
               ),
@@ -86,7 +95,7 @@ class _HomePageState extends State<HomePage> {
         }
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Google Map'),
+            title: const Text(AppConfig.appname),
             actions: [
               IconButton(
                 onPressed: () {

@@ -5,6 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:nomed/components/custom_button.dart';
 import 'package:nomed/components/custom_text_field.dart';
 import 'package:nomed/core/request_premmisiion_location.dart';
 import 'package:nomed/features/home/bloc/create_room_cubit.dart';
@@ -24,6 +25,7 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
 
   final _roomNameController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _locationController = TextEditingController();
 
   LatLng? _initialPosition;
   GoogleMapController? _controller;
@@ -53,6 +55,7 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
   void dispose() {
     _roomNameController.dispose();
     _descriptionController.dispose();
+    _locationController.dispose();
     super.dispose();
   }
 
@@ -79,7 +82,7 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
 
     return Scaffold(
       appBar: AppBar(title: const Text("Create Room")),
-    
+
       body: SafeArea(
         child: Form(
           key: _formKey,
@@ -105,9 +108,9 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
                           context.read<CreateRoomCubit>().setRoomName(value);
                         },
                       ),
-    
+
                       const SizedBox(height: 16),
-    
+
                       /// DESCRIPTION
                       CustomTextField(
                         textEditingController: _descriptionController,
@@ -115,44 +118,23 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
                         title: "Description (optional)",
                         hintText: "What is this room about?",
                         onChanged: (value) {
-                          context.read<CreateRoomCubit>().setDescription(
-                            value,
-                          );
+                          context.read<CreateRoomCubit>().setDescription(value);
                         },
                       ),
-    
+
                       const SizedBox(height: 24),
-    
+
                       /// LOCATION TEXT
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.location_on),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                _mapCenter != null
-                                    ? "Lat: ${_mapCenter!.latitude.toStringAsFixed(4)}, "
-                                          "Lng: ${_mapCenter!.longitude.toStringAsFixed(4)}"
-                                    : "Move map to select location",
-                                style: TextStyle(
-                                  color: _mapCenter != null
-                                      ? Colors.black
-                                      : Colors.grey,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                      ///
+                      CustomTextField(
+                        title: "Location",
+                        textEditingController: _locationController,
+                        prefixIcon: Icon(Icons.location_on_rounded),
                       ),
-    
+
+                    
                       const SizedBox(height: 12),
-    
+
                       /// MAP
                       SizedBox(
                         height: MediaQuery.of(context).size.height * 0.4,
@@ -164,27 +146,31 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
                                 target: _initialPosition!,
                                 zoom: 14,
                               ),
-    
+
                               onCameraMove: (position) {
                                 _mapCenter = position.target;
                               },
-    
+
                               onCameraIdle: () {
                                 if (_mapCenter == null) return;
-    
-                                setState(() {});
-    
+
+                                setState(() {
+                                  _locationController.text =
+                                      "Lat: ${_mapCenter!.latitude.toStringAsFixed(4)}, "
+                                      "Lng: ${_mapCenter!.longitude.toStringAsFixed(4)}";
+                                });
+
                                 context.read<CreateRoomCubit>().setLocation(
                                   _mapCenter!,
                                 );
                               },
-    
+
                               myLocationEnabled: true,
                               myLocationButtonEnabled: true,
-    
+
                               onMapCreated: (controller) =>
                                   _controller = controller,
-    
+
                               gestureRecognizers:
                                   <Factory<OneSequenceGestureRecognizer>>{
                                     Factory<OneSequenceGestureRecognizer>(
@@ -192,7 +178,7 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
                                     ),
                                   },
                             ),
-    
+
                             const Icon(
                               Icons.location_pin,
                               size: 40,
@@ -204,23 +190,22 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
                     ],
                   ),
                 ),
-    
+
                 /// CREATE BUTTON
                 SizedBox(
                   width: double.infinity,
                   child: BlocBuilder<CreateRoomCubit, CreateRoomState>(
                     builder: (context, state) {
-                      return ElevatedButton(
-                        onPressed: state.isLoading ? null : _submit,
-                        child: state.isLoading
-                            ? const SizedBox(
-                                height: 18,
-                                width: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Text("Create"),
+                      return CustomButton(
+                        onTap: state.isLoading ? null : _submit,
+                        text: "Create",
+
+                         buttonColor: state.isLoading
+                      ? Theme.of(context).disabledColor
+                      : Theme.of(context).primaryColor,
+                  borderColor: state.isLoading
+                      ? Theme.of(context).disabledColor
+                      : Theme.of(context).primaryColor,
                       );
                     },
                   ),

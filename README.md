@@ -1,278 +1,89 @@
-# nomed
+# Nomed - Real-time Location-based Chat App
 
-A new Flutter project.
+Nomed is a modern, location-aware full-stack application that allows users to discover, join, and interact in location-specific chat rooms. Find rooms nearby on a Google Map, create your own rooms based on your current location, and chat with others in real-time.
+
+
+## Features
+
+- **Authentication System**: Secure user registration and login using JWT.
+- **Location-Based Discovery**: Interactive Google Map interface showing chat rooms clustered around the user's location.
+- **Real-Time Chat**: WebSockets (Socket.io) integration for instantaneous messaging within any room.
+- **Room Management**: Create new chat rooms tied to geographical coordinates.
+- **State Management**: Robust BLoC pattern for managing UI state across the Flutter app.
+- **Clean Architecture**: Separation of concerns between the presentation layer, domain/business logic, and network layer.
+
+## Tech Stack
+
+### Frontend (Flutter)
+- **Framework**: Flutter (v3.32)
+- **State Management**: Flutter BLoC
+- **Networking**: Dio
+- **Real-time Engine**: socket_io_client
+- **Maps & Location**: google_maps_flutter, geolocator
+- **Dependency Injection**: get_it
+
+### Backend (Node.js)
+- **Runtime**: Node.js & Express.js (TypeScript)
+- **Real-time Server**: Socket.io
+- **Database**: MongoDB with Mongoose
+- **Security**: bcrypt, jsonwebtoken, zod (for schema validation)
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### Prerequisites
+- [Flutter SDK](https://docs.flutter.dev/get-started/install)
+- [Node.js](https://nodejs.org/en/download/)
+- MongoDB Instance
 
-A few resources to get you started if this is your first Flutter project:
+### Server Setup (Node.js)
+1. Navigate to the server directory:
+   ```bash
+   cd nomed-server
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Create a `.env` file referencing the `.env.example` file and provide your MongoDB URI and JWT secrets.
+4. Start the server (Dev Mode):
+   ```bash
+   npm run dev
+   ```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### App Setup (Flutter)
+1. Ensure the server is running and accessible (update API baseUrl in `lib/shared/network/` if on a physical device).
+2. Install dependencies:
+   ```bash
+   flutter pub get
+   ```
+3. Add your Google Maps API Key to `android/app/src/main/AndroidManifest.xml` and `ios/Runner/AppDelegate.swift`.
+4. Create a `.env` file in the Flutter root for your API endpoints.
+5. Run the app:
+   ```bash
+   flutter run
+   ```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Project Structure
 
-```
-nomed
-├─ .metadata
-├─ analysis_options.yaml
-├─ android
-│  ├─ .gradle
-│  │  ├─ 8.12
-│  │  │  ├─ checksums
-│  │  │  │  ├─ checksums.lock
-│  │  │  │  ├─ md5-checksums.bin
-│  │  │  │  └─ sha1-checksums.bin
-│  │  │  ├─ executionHistory
-│  │  │  │  ├─ executionHistory.bin
-│  │  │  │  └─ executionHistory.lock
-│  │  │  ├─ expanded
-│  │  │  ├─ fileChanges
-│  │  │  │  └─ last-build.bin
-│  │  │  ├─ fileHashes
-│  │  │  │  ├─ fileHashes.bin
-│  │  │  │  ├─ fileHashes.lock
-│  │  │  │  └─ resourceHashesCache.bin
-│  │  │  ├─ gc.properties
-│  │  │  └─ vcsMetadata
-│  │  ├─ buildOutputCleanup
-│  │  │  ├─ buildOutputCleanup.lock
-│  │  │  ├─ cache.properties
-│  │  │  └─ outputFiles.bin
-│  │  ├─ file-system.probe
-│  │  ├─ kotlin
-│  │  │  └─ errors
-│  │  ├─ noVersion
-│  │  │  └─ buildLogic.lock
-│  │  └─ vcs-1
-│  │     └─ gc.properties
-│  ├─ .kotlin
-│  │  ├─ errors
-│  │  └─ sessions
-│  ├─ app
-│  │  ├─ build.gradle.kts
-│  │  └─ src
-│  │     ├─ debug
-│  │     │  └─ AndroidManifest.xml
-│  │     ├─ main
-│  │     │  ├─ AndroidManifest.xml
-│  │     │  ├─ java
-│  │     │  │  └─ io
-│  │     │  │     └─ flutter
-│  │     │  │        └─ plugins
-│  │     │  │           └─ GeneratedPluginRegistrant.java
-│  │     │  ├─ kotlin
-│  │     │  │  └─ com
-│  │     │  │     └─ example
-│  │     │  │        └─ nomed
-│  │     │  │           └─ MainActivity.kt
-│  │     │  └─ res
-│  │     │     ├─ drawable
-│  │     │     │  └─ launch_background.xml
-│  │     │     ├─ drawable-v21
-│  │     │     │  └─ launch_background.xml
-│  │     │     ├─ mipmap-hdpi
-│  │     │     │  └─ ic_launcher.png
-│  │     │     ├─ mipmap-mdpi
-│  │     │     │  └─ ic_launcher.png
-│  │     │     ├─ mipmap-xhdpi
-│  │     │     │  └─ ic_launcher.png
-│  │     │     ├─ mipmap-xxhdpi
-│  │     │     │  └─ ic_launcher.png
-│  │     │     ├─ mipmap-xxxhdpi
-│  │     │     │  └─ ic_launcher.png
-│  │     │     ├─ values
-│  │     │     │  └─ styles.xml
-│  │     │     └─ values-night
-│  │     │        └─ styles.xml
-│  │     └─ profile
-│  │        └─ AndroidManifest.xml
-│  ├─ build.gradle.kts
-│  ├─ gradle
-│  │  └─ wrapper
-│  │     ├─ gradle-wrapper.jar
-│  │     └─ gradle-wrapper.properties
-│  ├─ gradle.properties
-│  ├─ gradlew
-│  ├─ gradlew.bat
-│  ├─ local.properties
-│  └─ settings.gradle.kts
-├─ devtools_options.yaml
-├─ ios
-│  ├─ Flutter
-│  │  ├─ AppFrameworkInfo.plist
-│  │  ├─ Debug.xcconfig
-│  │  ├─ ephemeral
-│  │  │  ├─ flutter_lldbinit
-│  │  │  └─ flutter_lldb_helper.py
-│  │  ├─ flutter_export_environment.sh
-│  │  ├─ Generated.xcconfig
-│  │  └─ Release.xcconfig
-│  ├─ Runner
-│  │  ├─ AppDelegate.swift
-│  │  ├─ Assets.xcassets
-│  │  │  ├─ AppIcon.appiconset
-│  │  │  │  ├─ Contents.json
-│  │  │  │  ├─ Icon-App-1024x1024@1x.png
-│  │  │  │  ├─ Icon-App-20x20@1x.png
-│  │  │  │  ├─ Icon-App-20x20@2x.png
-│  │  │  │  ├─ Icon-App-20x20@3x.png
-│  │  │  │  ├─ Icon-App-29x29@1x.png
-│  │  │  │  ├─ Icon-App-29x29@2x.png
-│  │  │  │  ├─ Icon-App-29x29@3x.png
-│  │  │  │  ├─ Icon-App-40x40@1x.png
-│  │  │  │  ├─ Icon-App-40x40@2x.png
-│  │  │  │  ├─ Icon-App-40x40@3x.png
-│  │  │  │  ├─ Icon-App-60x60@2x.png
-│  │  │  │  ├─ Icon-App-60x60@3x.png
-│  │  │  │  ├─ Icon-App-76x76@1x.png
-│  │  │  │  ├─ Icon-App-76x76@2x.png
-│  │  │  │  └─ Icon-App-83.5x83.5@2x.png
-│  │  │  └─ LaunchImage.imageset
-│  │  │     ├─ Contents.json
-│  │  │     ├─ LaunchImage.png
-│  │  │     ├─ LaunchImage@2x.png
-│  │  │     ├─ LaunchImage@3x.png
-│  │  │     └─ README.md
-│  │  ├─ Base.lproj
-│  │  │  ├─ LaunchScreen.storyboard
-│  │  │  └─ Main.storyboard
-│  │  ├─ GeneratedPluginRegistrant.h
-│  │  ├─ GeneratedPluginRegistrant.m
-│  │  ├─ Info.plist
-│  │  └─ Runner-Bridging-Header.h
-│  ├─ Runner.xcodeproj
-│  │  ├─ project.pbxproj
-│  │  ├─ project.xcworkspace
-│  │  │  ├─ contents.xcworkspacedata
-│  │  │  └─ xcshareddata
-│  │  │     ├─ IDEWorkspaceChecks.plist
-│  │  │     └─ WorkspaceSettings.xcsettings
-│  │  └─ xcshareddata
-│  │     └─ xcschemes
-│  │        └─ Runner.xcscheme
-│  ├─ Runner.xcworkspace
-│  │  ├─ contents.xcworkspacedata
-│  │  └─ xcshareddata
-│  │     ├─ IDEWorkspaceChecks.plist
-│  │     └─ WorkspaceSettings.xcsettings
-│  └─ RunnerTests
-│     └─ RunnerTests.swift
-├─ lib
-│  ├─ components
-│  │  ├─ custom_button.dart
-│  │  └─ custom_text_field.dart
-│  ├─ config
-│  │  ├─ app_config.dart
-│  │  ├─ colors.dart
-│  │  └─ style.dart
-│  ├─ core
-│  │  ├─ constents.dart
-│  │  ├─ helper.dart
-│  │  ├─ request_premmisiion_location.dart
-│  │  └─ service_locator.dart
-│  ├─ features
-│  │  ├─ auth
-│  │  │  ├─ bloc
-│  │  │  │  ├─ auth_cubit.dart
-│  │  │  │  └─ auth_state.dart
-│  │  │  ├─ domain
-│  │  │  │  ├─ auith_network.dart
-│  │  │  │  ├─ auth_repository.dart
-│  │  │  │  └─ auth_socket.dart
-│  │  │  ├─ model
-│  │  │  │  └─ user_model.dart
-│  │  │  └─ ui
-│  │  │     ├─ screens
-│  │  │     │  ├─ auth_gate.dart
-│  │  │     │  ├─ login_page.dart
-│  │  │     │  └─ register_page.dart
-│  │  │     └─ widgets
-│  │  ├─ chat
-│  │  │  ├─ bloc
-│  │  │  │  ├─ chat_rooms_list_bloc.dart
-│  │  │  │  ├─ chat_room_list_state.dart
-│  │  │  │  ├─ chat_room_membership_cubit.dart
-│  │  │  │  ├─ chat_room_membership_state.dart
-│  │  │  │  ├─ message_bloc.dart
-│  │  │  │  ├─ message_state.dart
-│  │  │  │  └─ room_join_state.dart
-│  │  │  ├─ domain
-│  │  │  │  ├─ message_network.dart
-│  │  │  │  └─ message_socket.dart
-│  │  │  ├─ model
-│  │  │  │  └─ message_model.dart
-│  │  │  └─ ui
-│  │  │     ├─ screens
-│  │  │     │  ├─ chat_messgae_page.dart
-│  │  │     │  └─ chat_page.dart
-│  │  │     └─ widgets
-│  │  ├─ home
-│  │  │  ├─ bloc
-│  │  │  │  ├─ create_room_cubit.dart
-│  │  │  │  ├─ create_room_state.dart
-│  │  │  │  ├─ room_cubit.dart
-│  │  │  │  ├─ room_details_cubit.dart
-│  │  │  │  ├─ room_details_state.dart
-│  │  │  │  └─ room_state.dart
-│  │  │  ├─ domain
-│  │  │  ├─ model
-│  │  │  │  └─ room_model.dart
-│  │  │  └─ ui
-│  │  │     ├─ screens
-│  │  │     │  ├─ create_room_page.dart
-│  │  │     │  └─ home_page.dart
-│  │  │     └─ widgets
-│  │  │        └─ room_bottomsheet.dart
-│  │  └─ navigation
-│  │     └─ app_navigation.dart
-│  ├─ main.dart
-│  └─ shared
-│     └─ network
-│        └─ room_network.dart
-├─ nomed-server
-│  ├─ nodemon.json
-│  ├─ package-lock.json
-│  ├─ package.json
-│  ├─ src
-│  │  ├─ app.ts
-│  │  ├─ config
-│  │  │  ├─ db.ts
-│  │  │  └─ env.ts
-│  │  ├─ controller
-│  │  │  ├─ auth.controller.ts
-│  │  │  ├─ messages.controller.ts
-│  │  │  └─ room.controller.ts
-│  │  ├─ middleware
-│  │  │  └─ auth.middleware.ts
-│  │  ├─ model
-│  │  │  ├─ chatroom.model.ts
-│  │  │  ├─ message.model.ts
-│  │  │  └─ user.model.ts
-│  │  ├─ router
-│  │  │  ├─ auth.route.ts
-│  │  │  ├─ message.route.ts
-│  │  │  └─ room.route.ts
-│  │  ├─ server.ts
-│  │  ├─ socket
-│  │  │  ├─ chat
-│  │  │  │  └─ chat.event.ts
-│  │  │  ├─ romm
-│  │  │  │  └─ room.event.ts
-│  │  │  └─ socket.ts
-│  │  ├─ types
-│  │  │  └─ express.d.ts
-│  │  └─ utils
-│  │     ├─ token.utils.ts
-│  │     └─ zodhelper.utils.ts
-│  └─ tsconfig.json
-├─ pubspec.lock
-├─ pubspec.yaml
-├─ README.md
-└─ test
-   └─ widget_test.dart
+- `lib/`
+  - `features/`: Contains specific feature modules (`auth`, `home`, `chat`).
+    - `bloc/`: State management logic.
+    - `domain/`: Business logic, network, and socket abstractions.
+    - `model/`: Data structures.
+    - `ui/`: Screens and widgets.
+  - `core/`: Shared constants, helpers, and dependency locator.
+  - `shared/`: App-wide API endpoints and setups.
 
-```
+## Screenshots
+
+<div align="center">
+  <!-- Replace the src with your actual screenshots -->
+  <img src="screenshots/image3.jpg" alt="Map View" width="300" />
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="screenshots/image1.jpg" alt="Chat View" width="300" />
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="screenshots/image2.jpg" alt="Login View" width="300" />
+</div>
+
+## License
+ISC

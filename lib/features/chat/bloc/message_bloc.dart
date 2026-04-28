@@ -16,6 +16,10 @@ class MessageCubit extends Cubit<MessageState> {
 
   UserModel? _user;
 
+  int _currentPage = 1;
+  int _totalPages = 1;
+  bool _isFetching = false;
+
   MessageCubit(this.api, this.messageSocket)
     : super(MessageState(isLoading: true)) {
     messageSocket.startListening();
@@ -37,14 +41,52 @@ class MessageCubit extends Cubit<MessageState> {
     }
   }
 
-  Future<void> fetchingOldMessage(String roomId, int limit, int page) async {
+  Future<void> fetchInitialMessages(String roomId, int limit) async {
+    _currentPage = 1;
+    _totalPages = 1;
+    _messages.clear();
+
+    emit(MessageState(isLoading: true));
+
     try {
+      final result = await api.fethcMessage(
+        roomId,
+        limit: limit,
+        page: _currentPage,
+      );
+
+      _totalPages = result.totalPages;
+      _messages = result.messages;
+
       emit(MessageState(messages: _messages));
-      final result = await api.fethcMessage(roomId, limit: limit, page: page);
-      _messages = [...result.messages, ..._messages];
-      emit(MessageState(messages: _messages));
+      _currentPage++;
     } catch (e) {
       emit(MessageState(error: e.toString()));
+    }
+  }
+
+  Future<void> fetchMore(String roomId, int limit) async {
+    if (_isFetching) return;
+    if (_currentPage > _totalPages) return;
+
+    try {
+      _isFetching = true;
+
+      final result = await api.fethcMessage(
+        roomId,
+        limit: limit,
+        page: _currentPage,
+      );
+
+      _messages = [...result.messages, ..._messages];
+
+      emit(MessageState(messages: _messages));
+
+      _currentPage++;
+    } catch (e) {
+      emit(MessageState(error: e.toString()));
+    } finally {
+      _isFetching = false;
     }
   }
 
@@ -62,7 +104,7 @@ class MessageCubit extends Cubit<MessageState> {
   Future<void> sendMessage(String roomId, String content) async {
     try {
       // emit(MessageSendingState(_messages));
-       await api.sendMessage(roomId, content);
+      await api.sendMessage(roomId, content);
       // _messages.add(result);
       // emit(MessageState(_messages));
     } catch (e) {

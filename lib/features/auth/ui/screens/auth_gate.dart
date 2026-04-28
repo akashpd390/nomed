@@ -31,7 +31,7 @@ class _AuthGateState extends State<AuthGate> {
         }
 
         if (state is AuthError){
-          print(state.message);
+          debugPrint(state.message);
           
         }
 

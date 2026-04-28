@@ -60,7 +60,7 @@ const fetchMessage = async (req: Request, res: Response) => {
             ;
 
 
-        const totalItems = await Message.countDocuments();
+        const totalItems = await Message.countDocuments({roomId});
 
         const totalPages = Math.ceil(totalItems / limit);
 

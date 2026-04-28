@@ -21,12 +21,27 @@ class ChatMessgaePage extends StatefulWidget {
 
 class _ChatMessgaePageState extends State<ChatMessgaePage> {
   final TextEditingController _controller = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
+  final int limit = 50;
 
   @override
   void initState() {
     super.initState();
-    context.read<MessageCubit>().fetchingOldMessage(widget.room.id, 50, 1);
+    context.read<MessageCubit>().fetchInitialMessages(widget.room.id, limit);
     // context.read<MessageCubit>().startListening();
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+
+    final position = _scrollController.position;
+
+    // reverse: true → TOP = maxScrollExtent
+    if (position.pixels >= position.maxScrollExtent - 50) {
+      context.read<MessageCubit>().fetchMore(widget.room.id, limit);
+    }
   }
 
   @override
@@ -91,17 +106,18 @@ class _ChatMessgaePageState extends State<ChatMessgaePage> {
             if (state.isLoading && state.messages.isEmpty) {
               return const Center(child: CircularProgressIndicator());
             }
-        
+
             if (state.error != null && state.messages.isEmpty) {
               return Center(child: Text(state.error!));
             }
             final messages = state.messages.reversed.toList();
+            debugPrint(messages.last.content);
             return Column(
               children: [
                 Expanded(
                   child: ListView.builder(
                     itemCount: messages.length,
-        
+                    controller: _scrollController,
                     reverse: true,
                     itemBuilder: (context, index) {
                       final item = messages[index];
@@ -120,7 +136,7 @@ class _ChatMessgaePageState extends State<ChatMessgaePage> {
                   ),
                   hintText: "Enter your message",
                   textEditingController: _controller,
-        
+
                   suffixIcon: InkWell(
                     onTap: () {
                       // sned message
@@ -132,7 +148,7 @@ class _ChatMessgaePageState extends State<ChatMessgaePage> {
                       }
                       _controller.text = "";
                     },
-        
+
                     child: Icon(Icons.send_sharp),
                   ),
                 ),
@@ -142,10 +158,7 @@ class _ChatMessgaePageState extends State<ChatMessgaePage> {
         ),
 
         bottomNavigationBar: SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [],
-          ),
+          child: Column(mainAxisSize: MainAxisSize.min, children: []),
         ),
       ),
     );
