@@ -12,6 +12,10 @@ Nomed is a modern, location-aware full-stack application that allows users to di
 - **State Management**: Robust BLoC pattern for managing UI state across the Flutter app.
 - **Clean Architecture**: Separation of concerns between the presentation layer, domain/business logic, and network layer.
 
+## 📱 Download
+
+[⬇️ Download Latest APK](https://github.com/akashpd390/nomed/releases/latest)
+
 ## Tech Stack
 
 ### Frontend (Flutter)
