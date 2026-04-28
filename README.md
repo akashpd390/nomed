@@ -78,12 +78,9 @@ Nomed is a modern, location-aware full-stack application that allows users to di
 
 <div align="center">
   <!-- Replace the src with your actual screenshots -->
-  <img src="screenshots/image3.jpg" alt="Map View" width="300" />
+  <img src="screenshots/image3.jpg" alt="Map View" width="30%" />
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="screenshots/image1.jpg" alt="Chat View" width="300" />
+  <img src="screenshots/image1.jpg" alt="Chat View" width="30%" />
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="screenshots/image2.jpg" alt="Login View" width="300" />
+  <img src="screenshots/image2.jpg" alt="Login View" width="30%" />
 </div>
-
-## License
-ISC
